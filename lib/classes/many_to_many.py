@@ -40,18 +40,30 @@ class Author():
     def articles(self):
         articles_list = []
         for article in Article.all:
-            if article.author.name == self._name:
+            if article.author == self:
                 articles_list.append(article)
         return articles_list
 
     def magazines(self):
-        pass
+        magazines_set = set()
+        authors_articles = Author.articles(self)
+        for article in authors_articles:
+            magazines_set.add(article.magazine)
+        return list(magazines_set)
 
     def add_article(self, magazine, title):
-        pass
+        new_article = Article(self,magazine,title)
+        return new_article
 
     def topic_areas(self):
-        pass    
+        topics = set()
+        authors_magazines = Author.magazines(self)
+        if len(authors_magazines) == 0:
+            return None
+        else:
+            for magazine in authors_magazines:
+                topics.add(magazine.category)
+        return list(topics)   
 
 class Magazine:
     def __init__(self, name, category):
@@ -83,7 +95,7 @@ class Magazine:
     def articles(self):
         articles_list = []
         for article in Article.all:
-            if article.magazine.name == self._name:
+            if article.magazine == self:
                 articles_list.append(article)
         return articles_list
 
@@ -94,7 +106,25 @@ class Magazine:
         return list(authors_list)
 
     def article_titles(self):
-        pass
+        titles = []
+        articles = Magazine.articles(self)
+        if len(articles) == 0:
+            return None
+        else:
+            for article in articles:
+                titles.append(article.title)
+        return titles
 
     def contributing_authors(self):
-        pass
+        authors = []
+        articles = Magazine.articles(self)
+        for article in articles:
+            authors.append(article.author)
+        checked = []
+        contributors = set()
+        for author in authors:
+            if author in checked:
+                contributors.add(author)
+            else:
+                checked.append(author)
+        return None if len(contributors) == 0 else list(contributors)
